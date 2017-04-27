@@ -18,10 +18,10 @@ def processLine(line):
     if line[0:3] == 'def':
         obj = ControlFlow()
         inFunc = line.replace('def ', '').replace(':\n','')
-        funcDecl = re.split(r'[(,)]', inFunc)
+        funcDecl = re.split(r'[(, )]', inFunc)
 
         #sets the descriptor to the name of the function
-        print(funcDecl)
+        #print(funcDecl)
         obj.descriptor = funcDecl[0]
 
         #first element is the descriptor, rest are parameters, so indexing starts at 1.
@@ -33,7 +33,7 @@ def processLine(line):
 
         line += whiteSpace + 'print(\'In function ' + inFunc + ' \')\n'
         callQueue.append(inFunc)
-    elif whiteSpaceCount(line) == 1 and len(callQueue) > 0:
+    elif whiteSpaceCount(line, 1) == 1 and len(callQueue) > 0:
         outFunc = callQueue[len(callQueue)-1]
         line = whiteSpace + 'print(\'Leaving function ' + outFunc + ' \')\n' + line
         callQueue = callQueue[0:len(callQueue)-1]
@@ -41,7 +41,7 @@ def processLine(line):
     return line
 
 #Returns the count of leading whitespace
-def whiteSpaceCount(line):
+def whiteSpaceCount(line, hi):
     return len(line) - len(line.lstrip())
 
 #Reads the file until it find a line with whitespace
