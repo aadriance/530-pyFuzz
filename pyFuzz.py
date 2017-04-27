@@ -1,4 +1,6 @@
 import sys
+from controlFlow import *
+import re
 
 #Written in python 3
 
@@ -14,7 +16,21 @@ def processLine(line):
     global callQueue
     global prevLine
     if line[0:3] == 'def':
+        obj = ControlFlow()
         inFunc = line.replace('def ', '').replace(':\n','')
+        funcDecl = re.split(r'[(,)]', inFunc)
+
+        #sets the descriptor to the name of the function
+        print(funcDecl)
+        obj.descriptor = funcDecl[0]
+
+        #first element is the descriptor, rest are parameters, so indexing starts at 1.
+        for i in funcDecl[1: len(funcDecl)-1]:
+            key = i
+            obj.parameters.update({key: None})
+
+        print(obj.encode())
+
         line += whiteSpace + 'print(\'In function ' + inFunc + ' \')\n'
         callQueue.append(inFunc)
     elif whiteSpaceCount(line) == 1 and len(callQueue) > 0:
