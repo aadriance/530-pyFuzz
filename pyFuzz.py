@@ -16,21 +16,40 @@ prevLine = ''
 def processLine(line):
     global callQueue
     global prevLine
-    if line[0:3] == 'def':
+    #incase you aren't just one indent in, find all the space
+    space = getSpace(line)
+    if isFunc(line):
         inFunc = line.replace('def ', '').replace(':\n','')
+        #close function
+        if len(callQueue) > 0:
+            outFunc = callQueue[len(callQueue)-1]
+            line = whiteSpace + 'print(\'Leaving function ' + outFunc + ' \')\n' + line
+            callQueue = callQueue[0:len(callQueue)-1]
         line += whiteSpace + 'obj = makeControlFlow(' + inFunc + ')\n'
         line += whiteSpace + 'print(obj.encode())\n'
         callQueue.append(inFunc)
-    elif whiteSpaceCount(line, 1) == 1 and len(callQueue) > 0:
+    #close function, but leave on the queue since it's a return
+    elif isReturn(line) and len(callQueue) > 0 :
         outFunc = callQueue[len(callQueue)-1]
-        #line = whiteSpace + 'print(\'Leaving function ' + outFunc + ' \')\n' + line
-        callQueue = callQueue[0:len(callQueue)-1]
+        line = space + 'print(\'Leaving function ' + outFunc + ' \')\n' + line
     prevLine = line
     return line
 
 #Returns the count of leading whitespace
 def whiteSpaceCount(line, hi):
     return len(line) - len(line.lstrip())
+
+#check if line is comment
+def isComment(line):
+    return (line.lstrip())[0] == '#'
+
+#check if line is a return
+def isReturn(line):
+    return (line.lstrip())[0:6] == 'return'
+
+#check if line is a function def
+def isFunc(line):
+    return line[0:4] == 'def '
 
 #Reads the file until it find a line with whitespace
 #Records the whitespace so we can replicate it later
@@ -39,12 +58,17 @@ def findWhiteSpace(inFile):
     global whiteSpace
     for line in inData:
         if len(line.lstrip()) != len(line) and len(line.lstrip()) != 0:
-            for c in line:
-                if c.isspace():
-                    whiteSpace += c
-                else:
-                    return
-            return
+            whiteSpace = getSpace(line)
+
+#copies the white space for that line
+def getSpace(line):
+    space = ''
+    for c in line:
+        if c.isspace():
+            space += c
+        else:
+            return space
+    return space
 
 #Takes one command line argument for the file name
 def main():
