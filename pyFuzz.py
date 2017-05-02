@@ -25,7 +25,7 @@ def processLine(line):
             outFunc = callQueue[len(callQueue)-1]
             line = whiteSpace + 'print(\'Leaving function ' + outFunc + ' \')\n' + line
             callQueue = callQueue[0:len(callQueue)-1]
-        line += whiteSpace + 'obj = makeControlFlow(' + inFunc + ')\n'
+        line += whiteSpace + 'obj = makeControlFlow(\'' + inFunc.replace('\'', '\\\'') + '\')\n'
         line += whiteSpace + 'print(obj.encode())\n'
         callQueue.append(inFunc)
     #close function, but leave on the queue since it's a return
