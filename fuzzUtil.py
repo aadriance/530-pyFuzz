@@ -27,8 +27,10 @@ def makeControlFlow(inFunc):
 #pop current context off stack
 def exitFunction():
     global ObjectStack
-    obj = ObjectStack[0]
+    if(len(ObjectStack) == 1):
+        prettyPrint()
     ObjectStack = ObjectStack[0:-1]
-    if(len(ObjectStack) == 0):
-        print(obj.encode())
+
+def prettyPrint():
+    print(ObjectStack[0].encode())
 
