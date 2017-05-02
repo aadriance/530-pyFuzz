@@ -75,11 +75,14 @@ def main():
     inFile = sys.argv[1]
     findWhiteSpace(inFile)
     inData = open(inFile, 'r')
-    outData = open('tooled_' + inFile, 'a')
+    outData = open('tooled_' + inFile, 'w')
+    #outData = open('tooled_' + inFile, 'a')
     #bring fuzz util into the tooled file
     outData.write('from fuzzUtil import *\n')
     for line in inData:
         outData.write(processLine(line))
+    outData.close()
+    inData.close()
 
 if __name__ == "__main__":
     main()
