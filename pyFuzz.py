@@ -18,15 +18,14 @@ def processLine(line):
     global prevLine
     #incase you aren't just one indent in, find all the space
     space = getSpace(line)
+    if(len(space) == 0 and not isComment(line) and len(callQueue) > 0):
+        outFunc = callQueue[len(callQueue)-1]
+        line = whiteSpace + 'exitFunction()\n' + line
+        callQueue = callQueue[0:len(callQueue)-1]
     if isFunc(line):
         inFunc = line.replace('def ', '').replace(':\n','')
         #close function
-        if len(callQueue) > 0:
-            outFunc = callQueue[len(callQueue)-1]
-            line = whiteSpace + 'exitFunction()\n' + line
-            callQueue = callQueue[0:len(callQueue)-1]
-        line += whiteSpace + 'obj = makeControlFlow(\'' + inFunc.replace('\'', '\\\'') + '\')\n'
-        line += whiteSpace + 'print(obj.encode())\n'
+        line += whiteSpace + 'makeControlFlow(\'' + inFunc.replace('\'', '\\\'') + '\')\n'
         callQueue.append(inFunc)
     #close function, but leave on the queue since it's a return
     elif isReturn(line) and len(callQueue) > 0 :

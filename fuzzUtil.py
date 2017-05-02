@@ -27,4 +27,8 @@ def makeControlFlow(inFunc):
 #pop current context off stack
 def exitFunction():
     global ObjectStack
+    obj = ObjectStack[0]
     ObjectStack = ObjectStack[0:-1]
+    if(len(ObjectStack) == 0):
+        print(obj.encode())
+
