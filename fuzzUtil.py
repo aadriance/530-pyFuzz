@@ -2,7 +2,12 @@
 import re
 from controlFlow import *
 
+ObjectStack = []
+
+#create object for current function context, 
+#add object to previous contect call list, change context
 def makeControlFlow(inFunc):
+    global ObjectStack
     obj = ControlFlow()
     funcDecl = re.split(r'[(, )]', inFunc)
 
@@ -14,4 +19,12 @@ def makeControlFlow(inFunc):
     for i in funcDecl[1: len(funcDecl)-1]:
         key = i
         obj.parameters.update({key: None})
+    if(len(ObjectStack) > 0):
+        ObjectStack[len(ObjectStack) - 1].flowTrace.append(obj)
+    ObjectStack.append(obj)
     return obj
+
+#pop current context off stack
+def exitFunction():
+    global ObjectStack
+    ObjectStack = ObjectStack[0:-1]

@@ -23,7 +23,7 @@ def processLine(line):
         #close function
         if len(callQueue) > 0:
             outFunc = callQueue[len(callQueue)-1]
-            line = whiteSpace + 'print(\'Leaving function ' + outFunc + ' \')\n' + line
+            line = whiteSpace + 'exitFunction()\n' + line
             callQueue = callQueue[0:len(callQueue)-1]
         line += whiteSpace + 'obj = makeControlFlow(\'' + inFunc.replace('\'', '\\\'') + '\')\n'
         line += whiteSpace + 'print(obj.encode())\n'
@@ -31,7 +31,7 @@ def processLine(line):
     #close function, but leave on the queue since it's a return
     elif isReturn(line) and len(callQueue) > 0 :
         outFunc = callQueue[len(callQueue)-1]
-        line = space + 'print(\'Leaving function ' + outFunc + ' \')\n' + line
+        line = space + 'exitFunction()\n' + line
     prevLine = line
     return line
 
