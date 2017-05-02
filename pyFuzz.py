@@ -16,14 +16,17 @@ prevLine = ''
 def processLine(line):
     global callQueue
     global prevLine
+    
+    origLine = line
+    
     #incase you aren't just one indent in, find all the space
     space = getSpace(line)
-    if(len(space) == 0 and not isComment(line) and len(callQueue) > 0):
+    if(len(line.lstrip()) > 0 and len(space) == 0 and not isComment(line) and len(callQueue) > 0):
         outFunc = callQueue[len(callQueue)-1]
         line = whiteSpace + 'exitFunction()\n' + line
         callQueue = callQueue[0:len(callQueue)-1]
-    if isFunc(line):
-        inFunc = line.replace('def ', '').replace(':\n','')
+    if isFunc(origLine):
+        inFunc = origLine.replace('def ', '').replace(':\n','')
         #close function
         line += whiteSpace + 'makeControlFlow(\'' + inFunc.replace('\'', '\\\'') + '\')\n'
         callQueue.append(inFunc)
