@@ -21,25 +21,30 @@ def processLine(line):
     
     #incase you aren't just one indent in, find all the space
     space = getSpace(line)
+
     if(len(line.lstrip()) > 0 and len(space) == 0 and not isComment(line) and len(callQueue) > 0):
         outFunc = callQueue[len(callQueue)-1]
         line = whiteSpace + 'exitFunction()\n' + line
         callQueue = callQueue[0:len(callQueue)-1]
+
     #if main exists
     if isMain(origLine):
         mainspace = getSpace(origLine)
+        #if __name__ == "__main__":
         if(len(mainspace) > 0):
             line = mainspace + 'try:\n' + mainspace + origLine + '\n' + mainspace + 'except:\n' +\
                (mainspace*2) + 'exitFunction()\n'
         else:
+            #line comes from earlier if statement. replacing the value here to add try/except
             line = whiteSpace + 'exitFunction()\n'
-            callQueue = callQueue[0:len(callQueue) - 1]
             line += 'try:\n' + whiteSpace + origLine + '\n' + 'except:\n' + whiteSpace + 'exitFunction()\n'
+
     elif isFunc(origLine):
         inFunc = origLine.replace('def ', '').replace(':\n','')
         #close function
         line += whiteSpace + 'makeControlFlow(\'' + inFunc.replace('\'', '\\\'') + '\')\n'
         callQueue.append(inFunc)
+
     #close function, but leave on the queue since it's a return
     elif isReturn(line) and len(callQueue) > 0 :
         outFunc = callQueue[len(callQueue)-1]

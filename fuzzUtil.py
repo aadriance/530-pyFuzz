@@ -35,4 +35,5 @@ def prettyPrint():
     ObjectStack[0].printCallTree()
     print('')
     ObjectStack[0].printStats()
+    #print(ObjectStack[0].encode())
 
