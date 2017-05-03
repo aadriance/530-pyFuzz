@@ -32,5 +32,7 @@ def exitFunction():
     ObjectStack = ObjectStack[0:-1]
 
 def prettyPrint():
-    print(ObjectStack[0].encode())
+    ObjectStack[0].printCallTree()
+    print('')
+    ObjectStack[0].printStats()
 

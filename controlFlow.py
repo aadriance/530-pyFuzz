@@ -29,6 +29,37 @@ class ControlFlow:
     #takes a json string and loads the object
     def decode(self, jStr):
         self.load(json.loads(jStr))
+    #prints the call tree from this object
+    def printCallTree(self):
+        self.printTreeLevel(0)
+    #tree print helper
+    def printTreeLevel(self, level):
+        line = '|'
+        for i in range(0,level):
+            line += '-'
+        line += self.descriptor
+        print(line)
+        for child in self.flowTrace:
+            child.printTreeLevel(level+1)
+    #print the call stats
+    def printStats(self):
+        stats = self.calcStats()
+        print("Call count:")
+        for key, value in stats.items():
+            print("|{} : {}".format(key, value))
+    #calcs call stats
+    def calcStats(self):
+        stats = dict()
+        self.addMyStats(stats)
+        return stats
+    #adds your stats to the dict
+    def addMyStats(self, stats):
+        if self.descriptor in stats:
+            stats[self.descriptor] += 1
+        else:
+            stats[self.descriptor] = 1
+        for child in self.flowTrace:
+            child.addMyStats(stats)
     
 #Tells json library how to handle out object
 def jdefault(o):
