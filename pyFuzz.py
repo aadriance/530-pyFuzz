@@ -25,7 +25,17 @@ def processLine(line):
         outFunc = callQueue[len(callQueue)-1]
         line = whiteSpace + 'exitFunction()\n' + line
         callQueue = callQueue[0:len(callQueue)-1]
-    if isFunc(origLine):
+    #if main exists
+    if isMain(origLine):
+        mainspace = getSpace(origLine)
+        if(len(mainspace) > 0):
+            line = mainspace + 'try:\n' + mainspace + origLine + '\n' + mainspace + 'except:\n' +\
+               (mainspace*2) + 'exitFunction()\n'
+        else:
+            line = whiteSpace + 'exitFunction()\n'
+            callQueue = callQueue[0:len(callQueue) - 1]
+            line += 'try:\n' + whiteSpace + origLine + '\n' + 'except:\n' + whiteSpace + 'exitFunction()\n'
+    elif isFunc(origLine):
         inFunc = origLine.replace('def ', '').replace(':\n','')
         #close function
         line += whiteSpace + 'makeControlFlow(\'' + inFunc.replace('\'', '\\\'') + '\')\n'
@@ -52,6 +62,9 @@ def isReturn(line):
 #check if line is a function def
 def isFunc(line):
     return line[0:4] == 'def '
+
+def isMain(line):
+    return (line.lstrip())[0:6] == 'main()'
 
 #Reads the file until it find a line with whitespace
 #Records the whitespace so we can replicate it later
