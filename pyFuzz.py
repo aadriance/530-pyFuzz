@@ -33,11 +33,11 @@ def processLine(line):
         #if __name__ == "__main__":
         if(len(mainspace) > 0):
             line = mainspace + 'try:\n' + mainspace + origLine + '\n' + mainspace + 'except:\n' +\
-               (mainspace*2) + 'exitFunction()\n'
+               (mainspace*2) + 'print(\'Crash!\')\n'+(mainspace*2) +'prettyPrint()\n'
         else:
             #line comes from earlier if statement. replacing the value here to add try/except
             line = whiteSpace + 'exitFunction()\n'
-            line += 'try:\n' + whiteSpace + origLine + '\n' + 'except:\n' + whiteSpace + 'exitFunction()\n'
+            line += 'try:\n' + whiteSpace + origLine + '\n' + 'except:\n' + whiteSpace + 'print(\'Crash!\')\n'+whiteSpace +'prettyPrint()\n'
 
     elif isFunc(origLine):
         inFunc = origLine.replace('def ', '').replace(':\n','')
