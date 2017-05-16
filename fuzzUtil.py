@@ -37,6 +37,9 @@ def prettyPrint():
     ObjectStack[0].printCallTree()
     print('')
     ObjectStack[0].printStats(FuncNames)
+    outData = open('out.json', 'w')
+    outData.write(ObjectStack[0].encode())
+    outData.close()
     #print(ObjectStack[0].encode())
 
 def registerFunc(name):
