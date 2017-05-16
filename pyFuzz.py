@@ -2,6 +2,7 @@ import sys
 from controlFlow import *
 from fuzzUtil import *
 import re
+import subprocess
 
 #Written in python 3
 
@@ -37,7 +38,7 @@ def processLine(line):
             for f in funcList:
                 line +=  mainspace + mainspace + 'registerFunc(\''+ f +'\')\n' 
             line += mainspace + origLine + '\n' + mainspace + 'except:\n' +\
-               (mainspace*2) + 'print(\'Crash!\')\n'+(mainspace*2) +'prettyPrint()\n'
+               (mainspace*2) + 'print(\'Crash!\')\n'+(mainspace*2) +'prettyPrint()\n' + (mainspace*2) + 'exit(57)\n'
         else:
             #line comes from earlier if statement. replacing the value here to add try/except
             line = whiteSpace + 'exitFunction()\n'
@@ -108,6 +109,8 @@ def main():
         outData.write(processLine(line))
     outData.close()
     inData.close()
+    exCode = subprocess.run(["python3", 'tooled_' + inFile])
+    print(exCode.returncode)
 
 if __name__ == "__main__":
     main()
