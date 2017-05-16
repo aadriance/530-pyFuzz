@@ -96,9 +96,24 @@ def getSpace(line):
             return space
     return space
 
+def makeArgs(parmList):
+    args = []
+    for arg in parmList:
+        if arg == 'int':
+            args.append(str(0))
+        if arg == 'string':
+            args.append('foo')
+    return args
+
 #Takes one command line argument for the file name
 def main():
+    if len(sys.argv) < 4:
+        print('Please provide a file name and run count')
+        print('pyFuzz inFile run# \'(parmList)\'')
+        exit(1)
     inFile = sys.argv[1]
+    runCount = int(sys.argv[2])
+    parmList = sys.argv[3].split(', ')
     findWhiteSpace(inFile)
     inData = open(inFile, 'r')
     outData = open('tooled_' + inFile, 'w')
@@ -109,8 +124,9 @@ def main():
         outData.write(processLine(line))
     outData.close()
     inData.close()
-    exCode = subprocess.run(["python3", 'tooled_' + inFile])
-    print(exCode.returncode)
+    for i in range(0,runCount):
+        exCode = subprocess.run(["python3", 'tooled_' + inFile] + makeArgs(parmList))
+        print(exCode)
 
 if __name__ == "__main__":
     main()
