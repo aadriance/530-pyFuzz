@@ -9,6 +9,7 @@ import re
 whiteSpace = ''
 callQueue = []
 prevLine = ''
+funcList = []
 
 #processLine takes in lines of the file one by one
 #If the line is a def line, insert the print and add the function to the call Queue
@@ -32,7 +33,10 @@ def processLine(line):
         mainspace = getSpace(origLine)
         #if __name__ == "__main__":
         if(len(mainspace) > 0):
-            line = mainspace + 'try:\n' + mainspace + origLine + '\n' + mainspace + 'except:\n' +\
+            line = mainspace + 'try:\n'
+            for f in funcList:
+                line +=  mainspace + mainspace + 'registerFunc(\''+ f +'\')\n' 
+            line += mainspace + origLine + '\n' + mainspace + 'except:\n' +\
                (mainspace*2) + 'print(\'Crash!\')\n'+(mainspace*2) +'prettyPrint()\n'
         else:
             #line comes from earlier if statement. replacing the value here to add try/except
@@ -44,6 +48,7 @@ def processLine(line):
         #close function
         line += whiteSpace + 'makeControlFlow(\'' + inFunc.replace('\'', '\\\'') + '\')\n'
         callQueue.append(inFunc)
+        funcList.append(inFunc)
 
     #close function, but leave on the queue since it's a return
     elif isReturn(line) and len(callQueue) > 0 :

@@ -3,6 +3,8 @@ import re
 from controlFlow import *
 
 ObjectStack = []
+FuncNames = []
+
 
 #create object for current function context, 
 #add object to previous contect call list, change context
@@ -34,6 +36,10 @@ def exitFunction():
 def prettyPrint():
     ObjectStack[0].printCallTree()
     print('')
-    ObjectStack[0].printStats()
+    ObjectStack[0].printStats(FuncNames)
     #print(ObjectStack[0].encode())
+
+def registerFunc(name):
+        FuncNames.append(re.split(r'[(, )]', name)[0])
+
 

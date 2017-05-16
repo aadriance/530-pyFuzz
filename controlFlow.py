@@ -42,14 +42,23 @@ class ControlFlow:
         for child in self.flowTrace:
             child.printTreeLevel(level+1)
     #print the call stats
-    def printStats(self):
-        stats = self.calcStats()
+    def printStats(self, funcList):
+        stats = self.calcStats(funcList)
         print("Call count:")
+        called = 0
+        notCalled = 0
         for key, value in stats.items():
             print("|{} : {}".format(key, value))
+            if value > 0:
+                called += 1
+            else:
+                notCalled += 1
+        print("{}% of functions called".format(100*called/(called + notCalled)))
     #calcs call stats
-    def calcStats(self):
+    def calcStats(self, funcList):
         stats = dict()
+        for name in funcList:
+            stats[name] = 0
         self.addMyStats(stats)
         return stats
     #adds your stats to the dict
