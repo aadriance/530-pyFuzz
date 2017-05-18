@@ -69,7 +69,31 @@ class ControlFlow:
             stats[self.descriptor] = 1
         for child in self.flowTrace:
             child.addMyStats(stats)
-    
+
+
+def calcStats(funcList, runList):
+    stats = dict()
+    for name in funcList:
+        stats[name] = 0
+    for run in runList:
+        newStats = run.calcStats(funcList)
+        for name in funcList:
+            stats[name] += newStats[name]
+    return stats
+
+ #print the call stats
+def printStats(stats):
+    print("Call count:")
+    called = 0
+    notCalled = 0
+    for key, value in stats.items():
+        print("|{} : {}".format(key, value))
+        if value > 0:
+            called += 1
+        else:
+            notCalled += 1
+    print("{}% of functions called".format(100*called/(called + notCalled)))
+
 #Tells json library how to handle out object
 def jdefault(o):
     return o.__dict__

@@ -15,6 +15,7 @@ whiteSpace = ''
 callQueue = []
 prevLine = ''
 funcList = []
+flowList = []
 
 INTMAX = 4000000
 
@@ -55,7 +56,7 @@ def processLine(line):
         #close function
         line += whiteSpace + 'makeControlFlow(\'' + inFunc.replace('\'', '\\\'') + '\')\n'
         callQueue.append(inFunc)
-        funcList.append(inFunc)
+        funcList.append(re.split(r'[(, )]', inFunc)[0])
 
     #close function, but leave on the queue since it's a return
     elif isReturn(line) and len(callQueue) > 0 :
@@ -169,6 +170,24 @@ def fuzzArgs(argsList):
         newlist.append((arg[0], val))
     return newlist
 
+def completeRun(retCode, argList):
+    output = open('out.json', 'r')
+    outJson = output.read()
+    newFlow = ControlFlow()
+    newFlow.decode(outJson)
+    flowList.append(newFlow)
+    if retCode != 0:
+        print('Process crash! with args:')
+        print(argList)
+        newFlow.printCallTree()
+    else:
+        print('Process completed without issue with args:')
+        print(argList)
+
+def printEndRun():
+    stats = calcStats(funcList, flowList)
+    printStats(stats)
+
 #Takes one command line argument for the file name
 def main():
     if len(sys.argv) < 4:
@@ -195,7 +214,8 @@ def main():
         argPairs = fuzzArgs(argPairs)
         args = [x[1] for x in argPairs]
         exCode = subprocess.call(["python3", 'tooled_' + inFile] + args)
-        print(exCode)
+        completeRun(exCode, args)
+    printEndRun()
 
 
 if __name__ == "__main__":

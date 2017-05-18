@@ -29,14 +29,14 @@ def makeControlFlow(inFunc):
 #pop current context off stack
 def exitFunction():
     global ObjectStack
-    #if(len(ObjectStack) == 1):
-    #    prettyPrint()
+    if(len(ObjectStack) == 1):
+        prettyPrint()
     ObjectStack = ObjectStack[0:-1]
 
 def prettyPrint():
-    ObjectStack[0].printCallTree()
-    print('')
-    ObjectStack[0].printStats(FuncNames)
+    #ObjectStack[0].printCallTree()
+    #print('')
+    #ObjectStack[0].printStats(FuncNames)
     outData = open('out.json', 'w')
     outData.write(ObjectStack[0].encode())
     outData.close()
