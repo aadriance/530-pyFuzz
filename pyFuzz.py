@@ -3,6 +3,10 @@ from controlFlow import *
 from fuzzUtil import *
 import re
 import subprocess
+import random
+import string
+from shutil import copyfile
+from os import rename
 
 #Written in python 3
 
@@ -11,6 +15,8 @@ whiteSpace = ''
 callQueue = []
 prevLine = ''
 funcList = []
+
+INTMAX = 4000000
 
 #processLine takes in lines of the file one by one
 #If the line is a def line, insert the print and add the function to the call Queue
@@ -97,19 +103,77 @@ def getSpace(line):
     return space
 
 def makeArgs(parmList):
+    #args is tuple of type and value
     args = []
     for arg in parmList:
         if arg == 'int':
-            args.append(str(0))
-        if arg == 'string':
-            args.append('foo')
+            args.append(('int', str(0)))
+        elif arg == 'string':
+            args.append(('string', 'foo'))
+        elif arg.startswith("file:"):
+            #append "_fuzzed" to file name 
+            src = arg.replace("file:", "")
+            copyfile(src, src + "_fuzzed")
+            args.append(('file', src + "_fuzzed"))
+        elif arg.startswith("static:"):
+            args.append(('static', arg.replace("static:", "")))
+        else:
+            print("Invalid argument")
+            exit(1)
     return args
+
+def fuzzInt():
+    return random.randint(0, INTMAX)
+
+def fuzzString():
+    #choose length
+    leng = random.randint(1, 100)
+    st = ""
+    for i in range(leng):
+       st += random.choice(string.printable)
+    return st
+
+def fuzzFile(fileName):
+    #open read/write binary
+    fuzzFile = open(fileName, "r")
+    newFile = open(fileName + "_tmp", "w")
+    c = fuzzFile.read(1)
+    while c != '':
+        newFile.write(random.choice(string.printable))
+        #jump random amount in file
+        for i in range(random.randint(1, 30)):
+            c = fuzzFile.read(1)
+            if c != '':
+                newFile.write(c)
+            else:
+               print("done")
+               break
+    fuzzFile.close()
+    newFile.close()
+    rename(fileName + "_tmp", fileName)
+    return fileName
+
+
+def fuzzArgs(argsList):
+    newlist = []
+    for arg in argsList:
+        val = None
+        if arg[0] == 'int':
+            val = str(fuzzInt())
+        elif arg[0] == 'string':
+            val = fuzzString()
+        elif arg[0] == 'file':
+            val = fuzzFile(arg[1])
+        else:
+           val = arg[1]
+        newlist.append((arg[0], val))
+    return newlist
 
 #Takes one command line argument for the file name
 def main():
     if len(sys.argv) < 4:
         print('Please provide a file name and run count')
-        print('pyFuzz inFile run# \'(parmList)\'')
+        print('pyFuzz inFile run# \'string, int, static:<arg>, file:<filename>\'')
         exit(1)
     inFile = sys.argv[1]
     runCount = int(sys.argv[2])
@@ -124,9 +188,15 @@ def main():
         outData.write(processLine(line))
     outData.close()
     inData.close()
+
+    #run the tooled file multiple times
+    argPairs = makeArgs(parmList)
     for i in range(0,runCount):
-        exCode = subprocess.run(["python3", 'tooled_' + inFile] + makeArgs(parmList))
+        argPairs = fuzzArgs(argPairs)
+        args = [x[1] for x in argPairs]
+        exCode = subprocess.call(["python3", 'tooled_' + inFile] + args)
         print(exCode)
+
 
 if __name__ == "__main__":
     main()
