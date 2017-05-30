@@ -11,6 +11,7 @@ FuncNames = []
 def makeControlFlow(inFunc):
     global ObjectStack
     obj = ControlFlow()
+    #if inFunc[0] != "[" or inFunc[2] != "]": 
     funcDecl = re.split(r'[(, )]', inFunc)
 
     #sets the descriptor to the name of the function

@@ -14,6 +14,7 @@ from os import rename
 #global variables, bc quick software design
 funcList = []
 flowList = []
+ifCount = 0
 
 INTMAX = 4000000
 
@@ -119,6 +120,30 @@ def processRedDef(red):
         funcList.append(dNode.name)
     return red
 
+def processRedIf(red):
+    ifList = red.find_all("IfNode")
+    global ifCount
+    for dNode in ifList:
+        testRed = RedBaron("if __name__ == \"__main__\": pass")
+        if dNode.test.dumps()==testRed[0].value[0].test.dumps():
+            tryLine = 'try:\n'
+            for f in funcList:
+                tryLine +=  '   registerFunc(\''+ f +'\')\n'
+            tryLine += '   ' + dNode.value.dumps().strip()
+            tryLine += '\nexcept:\n'
+            tryLine += '   print(\'Crash!\')\n   prettyPrint()\n   exit(57)\n'
+            dNode.value = tryLine
+            print("main try")
+        else:
+            #insert makeControlFlow code
+            ifName = "[" + str(ifCount) + "] if " + dNode.test.dumps()
+            ifName = ifName.replace(" ", "_")
+            ifCount += 1
+            dNode.value.insert(0,"makeControlFlow(\"" + ifName.replace("\"","\\\"") + "\")")
+            dNode.value.append("exitFunction()")
+            funcList.append(ifName.replace("\"",'''"'''))
+    return red
+
 def processRedRet(red):
     retList = red.find_all("ReturnNode")
     for retNode in retList:
@@ -127,22 +152,10 @@ def processRedRet(red):
         par.insert(dex, "exitFunction()")
     return red
 
-def processRedName(red):
-    testRed = RedBaron("if __name__ == \"__main__\": pass")
-    mainCall = red.find("IfNode", test=testRed[0].value[0].test)
-    tryLine = 'try:\n'
-    for f in funcList:
-        tryLine +=  '   registerFunc(\''+ f +'\')\n'
-    tryLine += '   ' + mainCall.value.dumps().strip()
-    tryLine += '\nexcept:\n'
-    tryLine += '   print(\'Crash!\')\n   prettyPrint()\n   exit(57)\n'
-    mainCall.value = tryLine
-    return red
-
 def processRed(red):
     red = processRedDef(red)
     red = processRedRet(red)
-    red = processRedName(red)
+    red = processRedIf(red)
     return red
 
 #Takes one command line argument for the file name
