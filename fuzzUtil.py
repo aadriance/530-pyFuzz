@@ -38,6 +38,7 @@ def prettyPrint():
     #ObjectStack[0].printCallTree()
     #print('')
     #ObjectStack[0].printStats(FuncNames)
+    print("going out")
     outData = open('out.json', 'w')
     outData.write(ObjectStack[0].encode())
     outData.close()

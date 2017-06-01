@@ -140,6 +140,7 @@ def processRedIf(red):
             for f in funcList:
                 tryLine +=  '   registerFunc(\''+ f +'\')\n'
             tryLine += '   ' + dNode.value.dumps().strip()
+            tryLine += '\n   prettyPrint()\n'
             tryLine += '\nexcept:\n'
             tryLine += '   print(\'Crash!\')\n   prettyPrint()\n   exit(57)\n'
             dNode.value = tryLine
