@@ -144,6 +144,32 @@ def processRedIf(red):
             funcList.append(ifName.replace("\"",'''"'''))
     return red
 
+def processRedElif(red):
+    ifList = red.find_all("ElifNode")
+    global ifCount
+    for dNode in ifList:
+        #insert makeControlFlow code
+        ifName = "[" + str(ifCount) + "] if " + dNode.test.dumps()
+        ifName = ifName.replace(" ", "_")
+        ifCount += 1
+        dNode.value.insert(0,"makeControlFlow(\"" + ifName.replace("\"","\\\"") + "\")")
+        dNode.value.append("exitFunction()")
+        funcList.append(ifName.replace("\"",'''"'''))
+    return red
+
+def processRedElse(red):
+    ifList = red.find_all("ElseNode")
+    global ifCount
+    for dNode in ifList:
+        #insert makeControlFlow code
+        ifName = "[" + str(ifCount) + "] if " + dNode.test.dumps()
+        ifName = ifName.replace(" ", "_")
+        ifCount += 1
+        dNode.value.insert(0,"makeControlFlow(\"" + ifName.replace("\"","\\\"") + "\")")
+        dNode.value.append("exitFunction()")
+        funcList.append(ifName.replace("\"",'''"'''))
+    return red
+
 def processRedRet(red):
     retList = red.find_all("ReturnNode")
     for retNode in retList:
