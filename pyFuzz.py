@@ -180,7 +180,6 @@ def processRedRet(red):
     for retNode in retList:
         dex = retNode.index_on_parent
         par = retNode.parent
-        print(par.help())
         par.insert(dex, "exitFunction()")
     return red
 
