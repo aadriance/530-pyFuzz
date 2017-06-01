@@ -120,9 +120,20 @@ def processRedDef(red):
         funcList.append(dNode.name)
     return red
 
-def processRedIf(red):
-    ifList = red.find_all("IfNode")
+def processRedIfBlock(red):
+    blockList = red.find_all("IfelseblockNode")
     global ifCount
+    print(blockList)
+    for block in blockList:
+        for node in block.value:
+            processRedIf(node)
+            processRedElif(node)
+            processRedElse(node)
+        ifCount += 1
+    return red
+
+def processRedIf(red):
+    ifList = red.find_all("IfNode", recursive=False)
     for dNode in ifList:
         testRed = RedBaron("if __name__ == \"__main__\": pass")
         if dNode.test.dumps()==testRed[0].value[0].test.dumps():
@@ -138,33 +149,28 @@ def processRedIf(red):
             #insert makeControlFlow code
             ifName = "[" + str(ifCount) + "] if " + dNode.test.dumps()
             ifName = ifName.replace(" ", "_")
-            ifCount += 1
             dNode.value.insert(0,"makeControlFlow(\"" + ifName.replace("\"","\\\"") + "\")")
             dNode.value.append("exitFunction()")
             funcList.append(ifName.replace("\"",'''"'''))
     return red
 
 def processRedElif(red):
-    ifList = red.find_all("ElifNode")
-    global ifCount
+    ifList = red.find_all("ElifNode", recursive=False)
     for dNode in ifList:
         #insert makeControlFlow code
-        ifName = "[" + str(ifCount) + "] if " + dNode.test.dumps()
+        ifName = "[" + str(ifCount) + "] else if " + dNode.test.dumps()
         ifName = ifName.replace(" ", "_")
-        ifCount += 1
         dNode.value.insert(0,"makeControlFlow(\"" + ifName.replace("\"","\\\"") + "\")")
         dNode.value.append("exitFunction()")
         funcList.append(ifName.replace("\"",'''"'''))
     return red
 
 def processRedElse(red):
-    ifList = red.find_all("ElseNode")
-    global ifCount
+    ifList = red.find_all("ElseNode", recursive=False)
     for dNode in ifList:
         #insert makeControlFlow code
-        ifName = "[" + str(ifCount) + "] if " + dNode.test.dumps()
+        ifName = "[" + str(ifCount) + "] else"
         ifName = ifName.replace(" ", "_")
-        ifCount += 1
         dNode.value.insert(0,"makeControlFlow(\"" + ifName.replace("\"","\\\"") + "\")")
         dNode.value.append("exitFunction()")
         funcList.append(ifName.replace("\"",'''"'''))
@@ -181,7 +187,7 @@ def processRedRet(red):
 def processRed(red):
     red = processRedDef(red)
     red = processRedRet(red)
-    red = processRedIf(red)
+    red = processRedIfBlock(red)
     return red
 
 #Takes one command line argument for the file name
