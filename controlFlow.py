@@ -1,5 +1,6 @@
 #controlFlow.py defines the ControlFlow class
 import json
+import sys
 
 class ControlFlow:
     def __init__(self):
@@ -14,6 +15,7 @@ class ControlFlow:
         self.parameters = dict()
     #encodes self and returns a json string
     def encode(self):
+        sys.setrecursionlimit(10000)
         return json.dumps(self, default = jdefault)
     #Takes as a parameters an object returned by json.loads
     #ANY NEW CLASS VARAIBLES NEED TO BE ADDED HERE
@@ -28,6 +30,7 @@ class ControlFlow:
             self.flowTrace.append(newFlow)
     #takes a json string and loads the object
     def decode(self, jStr):
+        sys.setrecursionlimit(10000)
         self.load(json.loads(jStr))
     #prints the call tree from this object
     def printCallTree(self):
@@ -53,7 +56,7 @@ class ControlFlow:
                 called += 1
             else:
                 notCalled += 1
-        print("{}% of functions called".format(100*called/(called + notCalled)))
+        print("{}% of code called".format(100*called/(called + notCalled)))
     #calcs call stats
     def calcStats(self, funcList):
         stats = dict()
@@ -92,7 +95,7 @@ def printStats(stats):
             called += 1
         else:
             notCalled += 1
-    print("{}% of functions called".format(100*called/(called + notCalled)))
+    print("{}% of code called".format(100*called/(called + notCalled)))
 
 #Tells json library how to handle out object
 def jdefault(o):

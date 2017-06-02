@@ -135,10 +135,10 @@ def processRedIf(red):
     ifList = red.find_all("IfNode", recursive=False)
     for dNode in ifList:
         testRed = RedBaron("if __name__ == \"__main__\": pass")
-        if dNode.test.dumps()==testRed[0].value[0].test.dumps():
+        if dNode.test.dumps().replace("'", '"')==testRed[0].value[0].test.dumps():
             tryLine = 'try:\n'
             for f in funcList:
-                tryLine +=  '   registerFunc(\''+ f +'\')\n'
+                tryLine +=  '   registerFunc(\''+ f.replace("'", '"').replace('"', '') +'\')\n'
             tryLine += '   ' + dNode.value.dumps().strip()
             tryLine += '\n   prettyPrint()\n'
             tryLine += '\nexcept:\n'
