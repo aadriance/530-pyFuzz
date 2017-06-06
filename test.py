@@ -21,6 +21,7 @@ def test(a,b):
 def main():
     test(2,3)
     test(3,3)
+    YouAreNOtReal()
 
 if __name__ == "__main__":
     main()

@@ -142,9 +142,8 @@ def processRedIf(red):
             tryLine += '   ' + dNode.value.dumps().strip()
             tryLine += '\n   prettyPrint()\n'
             tryLine += '\nexcept:\n'
-            tryLine += '   print(\'Crash!\')\n   prettyPrint()\n   exit(57)\n'
+            tryLine += '   print(\'Crash!\')\n   print(traceback.format_exc())\n   prettyPrint()\n   exit(57)\n'
             dNode.value = tryLine
-            print("main try")
         else:
             #insert makeControlFlow code
             ifName = "[" + str(ifCount) + "] if " + dNode.test.dumps()
@@ -203,6 +202,7 @@ def main():
     #outData = open('tooled_' + inFile, 'a')
     #bring fuzz util into the tooled file
     outData.write('from fuzzUtil import *\n')
+    outData.write('import traceback\n')
     with open(inFile, "r") as source:
         red = RedBaron(source.read())
 
