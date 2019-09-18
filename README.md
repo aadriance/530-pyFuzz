@@ -1,5 +1,9 @@
 # 530-pyFuzz
 
+pyfuzz is a project from a software engineering class in college.  The goal was to write a tool to help debug programs to help understand how advanced tooling works.
+
+This tool was functional at the time of completion.  While not a very useful tool, it was a great learning experience.
+
 ## Requirements
 pip install redbaron
 
